@@ -168,7 +168,7 @@ class GameMap {
     draw(ctx) {
         // 绘制背景
         ctx.fillStyle = '#0a0a2a';
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.fillRect(0, 0, GameConstants.CANVAS_WIDTH, GameConstants.CANVAS_HEIGHT);
 
         // 绘制星空背景
         this.drawStars(ctx);
@@ -189,8 +189,8 @@ class GameMap {
             this.stars = [];
             for (let i = 0; i < 100; i++) {
                 this.stars.push({
-                    x: Math.random() * CANVAS_WIDTH,
-                    y: Math.random() * CANVAS_HEIGHT,
+                    x: Math.random() * GameConstants.CANVAS_WIDTH,
+                    y: Math.random() * GameConstants.CANVAS_HEIGHT,
                     size: Math.random() * 2 + 0.5,
                     brightness: Math.random()
                 });
@@ -215,14 +215,14 @@ class GameMap {
         for (let row = 0; row <= GRID_ROWS; row++) {
             ctx.beginPath();
             ctx.moveTo(0, row * TILE_SIZE);
-            ctx.lineTo(CANVAS_WIDTH, row * TILE_SIZE);
+            ctx.lineTo(GameConstants.CANVAS_WIDTH, row * TILE_SIZE);
             ctx.stroke();
         }
 
         for (let col = 0; col <= GRID_COLS; col++) {
             ctx.beginPath();
             ctx.moveTo(col * TILE_SIZE, 0);
-            ctx.lineTo(col * TILE_SIZE, CANVAS_HEIGHT);
+            ctx.lineTo(col * TILE_SIZE, GameConstants.CANVAS_HEIGHT);
             ctx.stroke();
         }
 

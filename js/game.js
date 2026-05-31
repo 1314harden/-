@@ -356,7 +356,7 @@ class Game {
         const ctx = this.ctx;
 
         // 清空画布
-        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.clearRect(0, 0, GameConstants.CANVAS_WIDTH, GameConstants.CANVAS_HEIGHT);
 
         // 绘制地图
         this.map.draw(ctx);

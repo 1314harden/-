@@ -65,8 +65,8 @@ class Projectile {
         this.checkCollision(enemies);
 
         // 边界检测
-        if (this.x < -50 || this.x > CANVAS_WIDTH + 50 ||
-            this.y < -50 || this.y > CANVAS_HEIGHT + 50) {
+        if (this.x < -50 || this.x > GameConstants.CANVAS_WIDTH + 50 ||
+            this.y < -50 || this.y > GameConstants.CANVAS_HEIGHT + 50) {
             this.isDead = true;
         }
     }

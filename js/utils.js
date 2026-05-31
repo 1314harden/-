@@ -153,8 +153,10 @@ const Utils = {
 const TILE_SIZE = 40;
 const GRID_COLS = 25;
 const GRID_ROWS = 14;
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 700;
+// 画布尺寸 - 已移动到 performance.js 中的 GameConstants
+// 删除重复定义
+// const CANVAS_WIDTH = 1000;
+// const CANVAS_HEIGHT = 700;
 
 // 游戏状态枚举
 const GameState = {
