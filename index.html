@@ -5,6 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星际防线 - Starfall Defense</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 新增样式 */
+        .settings-panel {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            min-width: 180px;
+            z-index: 1000;
+        }
+
+        .settings-panel.hidden {
+            display: none;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(30, 30, 60, 0.5);
+            border-radius: 5px;
+        }
+
+        .settings-label {
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        .settings-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #4affff;
+        }
+
+        .toggle-btn {
+            padding: 5px 10px;
+            background: rgba(74, 158, 255, 0.3);
+            border: 1px solid #4a9eff;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(74, 158, 255, 0.5);
+        }
+
+        .achievement-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            color: #fff;
+            z-index: 2000;
+            text-align: center;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-name {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 16px;
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+
+        .stats-display {
+            position: absolute;
+            bottom: 150px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            min-width: 200px;
+        }
+
+        .stats-display.hidden {
+            display: none;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            color: #bbb;
+        }
+
+        .stat-value {
+            color: #4affff;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
@@ -24,10 +152,19 @@
                     <span id="lives">20</span>
                 </div>
                 <div class="resource">
+                    <span class="icon">🏆</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="resource">
                     <span class="icon">🌊</span>
                     <span id="wave">0</span>/20
                 </div>
+                <div class="resource">
+                    <span class="icon">👾</span>
+                    <span id="kills">0</span>
+                </div>
                 <button id="pause-btn" class="control-btn">⏸️</button>
+                <button id="settings-btn" class="control-btn">⚙️</button>
             </div>
 
             <!-- 塔选择面板 -->
@@ -67,10 +204,57 @@
                         <div class="tower-cost">💰 300</div>
                     </div>
                 </div>
-            </div>
+            <!-- 设置面板 -->
+                <div id="settings-panel" class="settings-panel hidden">
+                    <div class="settings-item">
+                        <span class="settings-label">音效</span>
+                        <button id="toggle-sound-btn" class="toggle-btn">开启</button>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">显示攻击范围</span>
+                        <button id="toggle-range-btn" class="toggle-btn">关闭</button>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">调试模式</span>
+                        <button id="toggle-debug-btn" class="toggle-btn">关闭</button>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">游戏时间</span>
+                        <span id="game-time-value" class="settings-value">00:00</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">帧率</span>
+                        <span id="fps-value" class="settings-value">60</span>
+                    </div>
+                </div>
 
-            <!-- 开始波次按钮 -->
-            <button id="start-wave-btn">开始波次 ▶</button>
+                <!-- 统计显示 -->
+                <div id="stats-panel" class="stats-display hidden">
+                    <div class="stat-row">
+                        <span class="stat-label">最高分:</span>
+                        <span id="high-score" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">成就:</span>
+                        <span id="achievement-count" class="stat-value">0/7</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">总击杀:</span>
+                        <span id="total-kills" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">总波次:</span>
+                        <span id="total-waves" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <!-- 成就弹窗 -->
+                <div id="achievement-popup" class="achievement-popup hidden">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-name">成就名称</div>
+                    <div class="achievement-desc">成就描述</div>
+                    <button class="menu-btn" onclick="document.getElementById('achievement-popup').classList.add('hidden')">关闭</button>
+                </div>
 
             <!-- 塔信息面板 -->
             <div id="tower-info-panel" class="hidden">

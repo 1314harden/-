@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 设置画布尺寸
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
+    canvas.width = GameConstants.CANVAS_WIDTH;
+    canvas.height = GameConstants.CANVAS_HEIGHT;
 
     // 创建游戏实例
     const game = new Game(canvas);
@@ -33,4 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('- 空格键或 P 键暂停游戏');
     console.log('- ESC 键取消选择');
     console.log('- 右键取消当前选择');
+    console.log('- F1 键切换调试模式');
+    console.log('- F2 键显示游戏状态');
+
+    // 调试快捷键
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'F1') {
+            e.preventDefault();
+            DebugTools.toggle();
+        }
+        if (e.key === 'F2') {
+            e.preventDefault();
+            DebugTools.showStats(game);
+        }
+    });
 });

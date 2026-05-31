@@ -5,12 +5,13 @@ class Game {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
-        this.state = GameState.MENU;
+        this.state = GameConstants.GameState.MENU;
 
         // 游戏数据
-        this.gold = 300;
-        this.lives = 20;
+        this.gold = GameConstants.INITIAL_GOLD;
+        this.lives = GameConstants.INITIAL_LIVES;
         this.totalKills = 0;
+        this.score = 0;
 
         // 游戏对象
         this.map = new GameMap();
@@ -29,12 +30,21 @@ class Game {
         // 性能优化
         this.lastTime = 0;
         this.deltaTime = 0;
+        this.frameCount = 0;
+
+        // 鼠标位置跟踪
+        this.mouseX = 0;
+        this.mouseY = 0;
+
+        // 游戏计时
+        this.gameTime = 0;
+        this.startTime = 0;
     }
 
     setupInput() {
         // 鼠标点击
         this.canvas.addEventListener('click', (e) => {
-            if (this.state !== GameState.PLAYING) return;
+            if (this.state !== GameConstants.GameState.PLAYING) return;
 
             const rect = this.canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -45,11 +55,14 @@ class Game {
 
         // 鼠标移动（用于预览）
         this.canvas.addEventListener('mousemove', (e) => {
-            if (this.state !== GameState.PLAYING) return;
+            if (this.state !== GameConstants.GameState.PLAYING) return;
 
             const rect = this.canvas.getBoundingClientRect();
             this.mouseX = e.clientX - rect.left;
             this.mouseY = e.clientY - rect.top;
+
+            // 实时预览塔放置位置
+            this.ui.updateTowerPreview(this.mouseX, this.mouseY);
         });
 
         // 右键取消选择
@@ -60,7 +73,14 @@ class Game {
 
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
-            if (this.state !== GameState.PLAYING) return;
+            if (this.state === GameConstants.GameState.MENU) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    this.startGame();
+                    return;
+                }
+            }
+
+            if (this.state !== GameConstants.GameState.PLAYING) return;
 
             switch (e.key) {
                 case 'Escape':
@@ -85,6 +105,15 @@ class Game {
                     break;
                 case '5':
                     this.ui.selectTowerType('tesla');
+                    break;
+                case 'w':
+                case 'W':
+                    this.startNextWave();
+                    break;
+                case 'r':
+                case 'R':
+                    this.ui.showRange = !this.ui.showRange;
+                    this.ui.showMessage(`攻击范围显示: ${this.ui.showRange ? '开启' : '关闭'}`);
                     break;
             }
         });
@@ -395,9 +424,19 @@ class Game {
 
     // 游戏主循环
     gameLoop(currentTime) {
+        // 性能统计
+        Performance.updateFPS(currentTime);
+
+        // 更新游戏状态
         this.update(currentTime);
+
+        // 绘制游戏
         this.draw();
 
+        // 性能监控
+        Performance.logPerformance(currentTime);
+
+        // 继续循环
         requestAnimationFrame((t) => this.gameLoop(t));
     }
 }
